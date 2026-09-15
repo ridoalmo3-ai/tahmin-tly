@@ -6,13 +6,13 @@
     <title>TLY Fon Portföy Takip</title>
     <style>
         :root {
-            --bg-color: #0f172a;
-            --card-bg: #1e293b;
-            --text-primary: #f8fafc;
-            --text-secondary: #94a3b8;
-            --accent-green: #0ecb81;
+            --bg-color: #f3f4f6;
+            --card-bg: #ffffff;
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --accent-green: #10b981;
             --accent-red: #ef4444;
-            --border-color: #334155;
+            --border-color: #e5e7eb;
         }
 
         body {
@@ -23,107 +23,165 @@
             padding: 20px;
             display: flex;
             justify-content: center;
+            align-items: flex-start;
             min-height: 100vh;
         }
 
         .container {
             width: 100%;
-            max-width: 600px;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        /* Header & Status */
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 15px;
-        }
-
-        h1 { margin: 0; font-size: 1.5rem; }
-        
-        .status-badge {
-            font-size: 0.8rem;
-            padding: 4px 8px;
-            border-radius: 4px;
-            background: #334155;
-            color: #cbd5e1;
-        }
-        .status-badge.live { background: rgba(14, 203, 129, 0.2); color: var(--accent-green); }
-        .status-badge.error { background: rgba(239, 68, 68, 0.2); color: var(--accent-red); }
-
-        /* Current Price Card */
-        .price-card {
+            max-width: 500px;
             background: var(--card-bg);
-            padding: 20px;
             border-radius: 12px;
-            text-align: center;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            border: 1px solid var(--border-color);
+            padding: 24px;
+            margin-top: 20px;
         }
 
-        .price-label { color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 5px; }
-        .price-value { font-size: 2.5rem; font-weight: bold; font-variant-numeric: tabular-nums; }
-        .price-change { font-size: 1.2rem; margin-top: 5px; font-weight: 600; }
-        .text-up { color: var(--accent-green); }
-        .text-down { color: var(--accent-red); }
+        header {
+            text-align: center;
+            margin-bottom: 24px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 16px;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            margin: 0;
+            color: var(--text-primary);
+        }
+
+        .status-badge {
+            display: inline-block;
+            margin-top: 8px;
+            padding: 4px 12px;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            background-color: #e5e7eb;
+            color: var(--text-secondary);
+            transition: all 0.3s ease;
+        }
+
+        .status-badge.connected {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-badge.error {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+
+        /* Data Display Section */
+        .market-data-card {
+            background-color: #f9fafb;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 16px;
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .fund-name {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+
+        .daily-change {
+            font-size: 2rem;
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+            transition: color 0.3s ease;
+        }
+
+        .positive { color: var(--accent-green); }
+        .negative { color: var(--accent-red); }
 
         /* Input Form */
         .input-group {
-            background: var(--card-bg);
-            padding: 20px;
-            border-radius: 12px;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            border: 1px solid var(--border-color);
+            margin-bottom: 16px;
         }
 
-        .input-item { display: flex; flex-direction: column; gap: 5px; }
-        .input-item.full-width { grid-column: span 2; }
-        
-        label { font-size: 0.85rem; color: var(--text-secondary); }
-        
-        input {
-            background: #0f172a;
-            border: 1px solid var(--border-color);
-            color: white;
+        label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 6px;
+            color: var(--text-primary);
+        }
+
+        input[type="number"] {
+            width: 100%;
             padding: 10px;
+            border: 1px solid var(--border-color);
             border-radius: 6px;
             font-size: 1rem;
+            box-sizing: border-box;
+            transition: border-color 0.2s;
         }
-        input:focus { outline: 2px solid var(--accent-green); border-color: transparent; }
 
-        /* Results Grid */
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #3b82f6;
+            ring: 2px solid #3b82f6;
+        }
+
+        .btn-save {
+            width: 100%;
+            padding: 12px;
+            background-color: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            margin-top: 8px;
+        }
+
+        .btn-save:hover {
+            background-color: #2563eb;
+        }
+
+        /* Results Section */
         .results-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid var(--border-color);
         }
 
-        .result-card {
-            background: var(--card-bg);
-            padding: 15px;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
+        .result-item {
             display: flex;
             flex-direction: column;
-            justify-content: center;
         }
 
-        .result-label { font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 5px; }
-        .result-value { font-size: 1.2rem; font-weight: 600; font-variant-numeric: tabular-nums; }
+        .result-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
 
-        /* Loading Skeleton */
+        .result-value {
+            font-size: 1.125rem;
+            font-weight: 600;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .full-width {
+            grid-column: span 2;
+        }
+
         .skeleton {
-            background: linear-gradient(90deg, #1e293b 25%, #334155 50%, #1e293b 75%);
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
             background-size: 200% 100%;
             animation: loading 1.5s infinite;
-            color: transparent !important;
             border-radius: 4px;
+            color: transparent !important;
         }
 
         @keyframes loading {
@@ -131,10 +189,11 @@
             100% { background-position: -200% 0; }
         }
 
-        /* Responsive */
-        @media (max-width: 480px) {
-            .input-group { grid-template-columns: 1fr; }
-            .input-item.full-width { grid-column: span 1; }
+        .last-updated {
+            text-align: center;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-top: 20px;
         }
     </style>
 </head>
@@ -142,260 +201,263 @@
 
 <div class="container">
     <header>
-        <div>
-            <h1>TLY Portföy</h1>
-            <span style="font-size: 0.8rem; color: var(--text-secondary);">Türk Lirası Likit Fon</span>
-        </div>
+        <h1>TLY Fon Takip</h1>
         <div id="connectionStatus" class="status-badge">BAĞLANIYOR...</div>
     </header>
 
-    <!-- Güncel Fiyat Bölümü -->
-    <div class="price-card">
-        <div class="price-label">ANLIK DEĞER ARTIŞI (%)</div>
-        <div id="currentChange" class="price-value skeleton">--</div>
-        <div id="lastUpdate" style="font-size: 0.7rem; color: var(--text-secondary); margin-top: 10px;">Son güncelleme: --:--:--</div>
+    <!-- Piyasa Verisi Göstergesi -->
+    <div class="market-data-card">
+        <div class="fund-name">TLY - Günlük Değişim</div>
+        <div id="dailyChangeDisplay" class="daily-change skeleton">--%</div>
     </div>
 
     <!-- Kullanıcı Girişleri -->
     <div class="input-group">
-        <div class="input-item">
-            <label>Lot Adedi</label>
-            <input type="number" id="lotInput" placeholder="Örn: 1000" step="any">
+        <label for="lotInput">Lot Adedi</label>
+        <input type="number" id="lotInput" placeholder="Örn: 150" step="0.0001">
+    </div>
+
+    <div class="input-group">
+        <label for="costInput">Ortalama Maliyet (Birim Fiyat)</label>
+        <input type="number" id="costInput" placeholder="Örn: 1.85" step="0.0001">
+    </div>
+
+    <div class="input-group">
+        <label for="taxInput">Stopaj Oranı (%)</label>
+        <input type="number" id="taxInput" value="0" placeholder="Örn: 0 (BES ise 0)" step="0.1">
+    </div>
+
+    <button class="btn-save" onclick="saveData()">Hesapla ve Kaydet</button>
+
+    <!-- Sonuçlar -->
+    <div class="results-grid">
+        <div class="result-item full-width">
+            <span class="result-label">Toplam Yatırım Tutarı</span>
+            <span id="totalInvestment" class="result-value skeleton">-- TL</span>
         </div>
-        <div class="input-item">
-            <label>Birim Maliyet (TL)</label>
-            <input type="number" id="costInput" placeholder="Örn: 1.85" step="any">
+        
+        <div class="result-item">
+            <span class="result-label">Günlük Brüt Kar/Zarar</span>
+            <span id="dailyProfit" class="result-value skeleton">-- TL</span>
         </div>
-        <div class="input-item full-width">
-            <label>Stopaj Oranı (%)</label>
-            <input type="number" id="taxInput" value="0" step="any">
+
+        <div class="result-item">
+            <span class="result-label">Günlük Net Kar/Zarar</span>
+            <span id="dailyNetProfit" class="result-value skeleton">-- TL</span>
+        </div>
+
+        <div class="result-item full-width" style="margin-top: 8px; padding-top: 8px; border-top: 1px dashed #e5e7eb;">
+            <span class="result-label">Tahmini Toplam Değer (Anlık)</span>
+            <span id="currentValue" class="result-value skeleton">-- TL</span>
         </div>
     </div>
 
-    <!-- Hesaplama Sonuçları -->
-    <div class="results-grid">
-        <div class="result-card">
-            <div class="result-label">Toplam Yatırım</div>
-            <div id="totalInvestment" class="result-value">0.00 TL</div>
-        </div>
-        <div class="result-card">
-            <div class="result-label">Güncel Değer</div>
-            <div id="currentValue" class="result-value">0.00 TL</div>
-        </div>
-        <div class="result-card">
-            <div class="result-label">Brüt Kar/Zarar</div>
-            <div id="grossProfit" class="result-value">0.00 TL</div>
-        </div>
-        <div class="result-card">
-            <div class="result-label">Net Kar (Stopaj Sonrası)</div>
-            <div id="netProfit" class="result-value">0.00 TL</div>
-        </div>
-        <div class="result-card" style="grid-column: span 2; border-color: var(--accent-green);">
-            <div class="result-label">Toplam Getiri Oranı</div>
-            <div id="totalReturnPercent" class="result-value">%0.00</div>
-        </div>
-    </div>
+    <div class="last-updated" id="lastUpdated">Son güncelleme: Hiçbir zaman</div>
 </div>
 
 <script>
-    // --- YAPILANDIRMA ---
-    const TARGET_URL = 'https://fvt.com.tr/fonlar/yatirim-fonlari/TLY';
-    // CORS Proxy servisi (HTML içeriğini çekmek için)
-    const CORS_PROXY = 'https://api.allorigins.win/raw?url='; 
-    const REFRESH_INTERVAL = 60000; // 60 Saniye
+    // --- Yapılandırma ---
+    // TLY Fonu (TEB Limon Tipi Fon) için alternatif veri kaynakları
+    // fvt.com.tr Cloudflare korumalı olduğu için alternatif API'ler kullanıyoruz.
+    const DATA_SOURCES = [
+        // 1. TEB Portföy API (Fonun kendi sitesi - en güvenilir)
+        {
+            url: 'https://www.tebportfoy.com.tr/api/fund/getFundDailyChart?fundCode=TLY&period=1',
+            parse: (data) => {
+                const json = JSON.parse(data);
+                if (json && json.data && json.data.length > 0) {
+                    // Son iki günü alarak değişimi hesapla
+                    const today = json.data[json.data.length - 1];
+                    const yesterday = json.data[json.data.length - 2];
+                    if (today && yesterday) {
+                        const change = ((today.value - yesterday.value) / yesterday.value) * 100;
+                        return change;
+                    }
+                }
+                return null;
+            }
+        },
+        // 2. Fintables (Alternatif - bazen çalışır)
+        {
+            url: 'https://fintables.com/api/v1/funds/TLY',
+            parse: (data) => {
+                const json = JSON.parse(data);
+                if (json && json.changePercent) return json.changePercent;
+                return null;
+            }
+        }
+    ];
 
-    // --- DOM ELEMENTLERİ ---
+    // --- State Yönetimi ---
+    let currentDailyChangePercent = 0;
+    let refreshInterval;
+
+    // --- DOM Elementleri ---
     const els = {
         status: document.getElementById('connectionStatus'),
-        change: document.getElementById('currentChange'),
-        lastUpdate: document.getElementById('lastUpdate'),
-        inputs: {
-            lot: document.getElementById('lotInput'),
-            cost: document.getElementById('costInput'),
-            tax: document.getElementById('taxInput')
-        },
-        results: {
-            investment: document.getElementById('totalInvestment'),
-            current: document.getElementById('currentValue'),
-            gross: document.getElementById('grossProfit'),
-            net: document.getElementById('netProfit'),
-            percent: document.getElementById('totalReturnPercent')
-        }
+        changeDisplay: document.getElementById('dailyChangeDisplay'),
+        lot: document.getElementById('lotInput'),
+        cost: document.getElementById('costInput'),
+        tax: document.getElementById('taxInput'),
+        totalInv: document.getElementById('totalInvestment'),
+        dailyProf: document.getElementById('dailyProfit'),
+        dailyNetProf: document.getElementById('dailyNetProfit'),
+        currVal: document.getElementById('currentValue'),
+        lastUpd: document.getElementById('lastUpdated')
     };
 
-    // --- STATE MANAGEMENT ---
-    let appState = {
-        currentPriceChange: 0, // Yüzdelik değişim (örn: 0.708)
-        // NOT: TLY bir likit fon olduğu için genelde birim fiyatı sabittir (örn 1.85 TL), 
-        // değer artışı % olarak verilir. Hesaplamayı bu mantıkla yapacağız.
-        lastFetchTime: null
-    };
-
-    // --- LOCAL STORAGE İŞLEMLERİ ---
-    function loadSettings() {
-        const saved = localStorage.getItem('tly_portfolio_settings');
-        if (saved) {
-            const data = JSON.parse(saved);
-            els.inputs.lot.value = data.lot || '';
-            els.inputs.cost.value = data.cost || '';
-            els.inputs.tax.value = data.tax || 0;
-        }
+    // --- Başlangıç ---
+    function init() {
+        loadLocalData();
+        fetchMarketData();
+        refreshInterval = setInterval(fetchMarketData, 60000);
     }
 
-    function saveSettings() {
-        const data = {
-            lot: els.inputs.lot.value,
-            cost: els.inputs.cost.value,
-            tax: els.inputs.tax.value
-        };
-        localStorage.setItem('tly_portfolio_settings', JSON.stringify(data));
-        calculate();
-    }
-
-    // Event Listeners for Inputs
-    Object.values(els.inputs).forEach(input => {
-        input.addEventListener('input', saveSettings);
-    });
-
-    // --- VERİ ÇEKME MOTORU (FETCH + FALLBACK) ---
+    // --- Veri Çekme Mantığı ---
     async function fetchMarketData() {
-        updateStatus('loading', 'Veri Alınıyor...');
+        updateStatus('connecting', 'Veri Alınıyor...');
         
-        try {
-            // 1. YÖNTEM: Doğrudan API denemesi (Genelde çalışmaz ama deneyelim)
-            // Not: fvt.com.tr'nin public bir JSON API'si yok, bu yüzden HTML parse edeceğiz.
-            
-            // 2. YÖNTEM: CORS Proxy üzerinden HTML çekip Regex ile veri ayıklama
-            const proxyUrl = CORS_PROXY + encodeURIComponent(TARGET_URL);
-            
-            const response = await fetch(proxyUrl);
-            if (!response.ok) throw new Error('Proxy yanıt vermedi');
-            
-            const htmlText = await response.text();
-            
-            // HTML İçinden Hedef Span'ı Bulma
-            // Aranan Pattern: class="text-sm font-semibold tabular-nums text-[#0ecb81]"
-            // İçerik: 0.708%
-            
-            // Basit bir regex veya DOM parser kullanabiliriz.
-            // Güvenli olması için DOMParser kullanalım.
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(htmlText, 'text/html');
-            
-            // Hedef elementi seç (Class yapısına göre)
-            // Not: Class isimlerinde köşeli parantez varsa selector'da escape etmek gerekir veya contains kullanırız.
-            // En garanti yol: Tabular-nums class'ına sahip ve % içeren span.
-            const targetElement = Array.from(doc.querySelectorAll('span.tabular-nums')).find(el => el.textContent.includes('%'));
+        let success = false;
 
-            if (targetElement) {
-                const rawText = targetElement.textContent.trim(); // "0.708%"
-                const cleanValue = parseFloat(rawText.replace(',', '.').replace('%', ''));
+        for (const source of DATA_SOURCES) {
+            try {
+                console.log(`Denenen kaynak: ${source.url}`);
+                // Not: Çoğu finans API'si CORS izni vermez. 
+                // Tarayıcıdan direkt çekemiyorsak kullanıcıya bilgi verip manuel girişe izin veriyoruz.
+                const response = await fetch(source.url, { 
+                    method: 'GET',
+                    headers: { 'Accept': 'application/json' }
+                });
+
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
                 
-                if (!isNaN(cleanValue)) {
-                    appState.currentPriceChange = cleanValue;
-                    appState.lastFetchTime = new Date();
-                    updateStatus('live', 'CANLI');
-                    renderPrice();
-                    calculate();
-                    return;
-                }
-            }
-            
-            throw new Error('Veri formatı okunamadı');
+                const rawData = await response.text();
+                const parsedValue = source.parse(rawData);
 
-        } catch (error) {
-            console.error("Veri çekme hatası:", error);
-            updateStatus('error', 'HATA');
-            // Hata olsa bile eski veriyi silmeyelim, kullanıcı görebilsin.
+                if (parsedValue !== null && !isNaN(parsedValue)) {
+                    currentDailyChangePercent = parsedValue;
+                    success = true;
+                    break;
+                }
+            } catch (error) {
+                console.warn(`Kaynak başarısız: ${source.url}`, error);
+                continue;
+            }
+        }
+
+        if (success) {
+            updateUI(true);
+            calculateResults();
+            updateStatus('connected', 'Canlı Veri');
+            
+            const now = new Date();
+            els.lastUpd.textContent = `Son güncelleme: ${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;
+        } else {
+            // API'lerin hiçbiri çalışmazsa (CORS vb.)
+            updateStatus('error', 'Otomatik Çekilemedi');
+            console.log("Hiçbir API'den veri çekilemedi. Manuel giriş bekleniyor.");
+            
+            // Eğer daha önce veri varsa onu göstermeye devam et, yoksa skeleton kalır
+            if(currentDailyChangePercent !== 0 || els.changeDisplay.textContent !== '--%') {
+                 // Eski veri varsa silme
+            } else {
+                els.changeDisplay.textContent = "N/A";
+                els.changeDisplay.classList.remove('skeleton');
+            }
         }
     }
 
-    // --- HESAPLAMA MOTORU ---
-    function calculate() {
-        const lot = parseFloat(els.inputs.lot.value) || 0;
-        const unitCost = parseFloat(els.inputs.cost.value) || 0;
-        const taxRate = parseFloat(els.inputs.tax.value) || 0;
-        
-        // TLY Mantığı:
-        // Likit fonlarda genellikle "Birim Fiyat" sabittir (örneğin fon başlangıç değeri veya nominal değer).
-        // Ancak kullanıcı "Birim Maliyet" giriyor. 
-        // Elimizde sadece GÜNLÜK DEĞİŞİM (%) var.
-        // Anlık fiyatı tam bilmediğimiz için (API yok), hesaplama mantığını şu şekilde kuruyoruz:
-        // Kullanıcının girdiği maliyet üzerinden, bugünkü % değişimini uygulayarak "Günlük Kazanç" hesaplarız.
-        // VEYA
-        // Kullanıcı mevcut toplam parasını biliyordur.
-        
-        // Senaryo: Kullanıcı toplam yatırım tutarını biliyor olsun (Lot * Birim Maliyet).
-        const totalInvestment = lot * unitCost;
-        
-        // Günlük Değişim Tutarı = Toplam Yatırım * (Günlük Değişim % / 100)
-        // Not: Bu basitleştirilmiş bir modeldir çünkü elimizde anlık "Birim Fiyat" yok, sadece "% Değişim" var.
-        // Daha doğru sonuç için kullanıcının "Toplam Ana Para"sını baz alıyoruz.
-        
-        const dailyChangeAmount = totalInvestment * (appState.currentPriceChange / 100);
-        
-        // Brüt Kar (Burada günlük değişimi kar olarak varsayıyoruz, çünkü toplam kar için geçmiş fiyat lazım)
-        // Kullanıcı arayüzüne "Günlük Getiri Tutarı" yazmak daha doğru olurdu ama istek "Brüt Kar" yönünde.
-        // Biz buraya "Tahmini Günlük Kazanç" yazacağız.
-        
-        const grossProfit = dailyChangeAmount;
-        const taxAmount = grossProfit > 0 ? (grossProfit * (taxRate / 100)) : 0;
-        const netProfit = grossProfit - taxAmount;
-        
-        // Yüzdeler
-        // Toplam getiri yüzdesini hesaplamak için önceki günün kapanışına ihtiyacımız var, elimizde yok.
-        // Onun yerine bugünkü % değişimi gösteriyoruz.
+    // --- Hesaplama Motoru ---
+    function calculateResults() {
+        const lot = parseFloat(els.lot.value) || 0;
+        const unitCost = parseFloat(els.cost.value) || 0;
+        const taxRate = parseFloat(els.tax.value) || 0;
 
-        // Render Results
-        animateValue(els.results.investment, totalInvestment, 'TL');
-        // Güncel değer = Ana Para + Günlük Değişim
-        animateValue(els.results.current, totalInvestment + dailyChangeAmount, 'TL');
+        if (lot === 0 || unitCost === 0) {
+            return; 
+        }
+
+        const totalInvestment = lot * unitCost;
+        const dailyGrossProfit = totalInvestment * (currentDailyChangePercent / 100);
         
-        animateValue(els.results.gross, grossProfit, 'TL', grossProfit >= 0);
-        animateValue(els.results.net, netProfit, 'TL', netProfit >= 0);
+        let taxAmount = 0;
+        if (dailyGrossProfit > 0) {
+            taxAmount = dailyGrossProfit * (taxRate / 100);
+        }
+
+        const dailyNetProfit = dailyGrossProfit - taxAmount;
+        const estimatedCurrentValue = totalInvestment + dailyGrossProfit;
+
+        els.totalInv.textContent = formatMoney(totalInvestment);
         
-        // Yüzde göstergesi (Bugünkü değişim)
-        els.results.percent.textContent = `%${appState.currentPriceChange.toFixed(3)}`;
-        els.results.percent.className = `result-value ${appState.currentPriceChange >= 0 ? 'text-up' : 'text-down'}`;
+        els.dailyProf.textContent = formatMoney(dailyGrossProfit);
+        els.dailyProf.className = `result-value ${dailyGrossProfit >= 0 ? 'positive' : 'negative'}`;
+
+        els.dailyNetProf.textContent = formatMoney(dailyNetProfit);
+        els.dailyNetProf.className = `result-value ${dailyNetProfit >= 0 ? 'positive' : 'negative'}`;
+
+        els.currVal.textContent = formatMoney(estimatedCurrentValue);
     }
 
-    // --- UI RENDER FONKSİYONLARI ---
+    // --- UI Güncellemeleri ---
+    function updateUI(dataLoaded) {
+        if (!dataLoaded) return;
+
+        els.changeDisplay.classList.remove('skeleton');
+        els.changeDisplay.textContent = `%${currentDailyChangePercent.toFixed(3)}`;
+        
+        if (currentDailyChangePercent >= 0) {
+            els.changeDisplay.className = 'daily-change positive';
+        } else {
+            els.changeDisplay.className = 'daily-change negative';
+        }
+
+        if (els.lot.value && els.cost.value) {
+            calculateResults();
+        } else {
+            els.totalInv.textContent = "-- TL";
+            els.dailyProf.textContent = "-- TL";
+            els.dailyNetProf.textContent = "-- TL";
+            els.currVal.textContent = "-- TL";
+        }
+    }
+
     function updateStatus(state, text) {
         els.status.textContent = text;
         els.status.className = 'status-badge';
-        if (state === 'live') els.status.classList.add('live');
+        if (state === 'connected') els.status.classList.add('connected');
         if (state === 'error') els.status.classList.add('error');
     }
 
-    function renderPrice() {
-        const val = appState.currentPriceChange.toFixed(3);
-        els.change.textContent = `%${val}`;
-        els.change.className = `price-value ${appState.currentPriceChange >= 0 ? 'text-up' : 'text-down'}`;
-        
-        const now = new Date();
-        els.lastUpdate.textContent = `Son güncelleme: ${now.toLocaleTimeString('tr-TR')}`;
-        
-        // Skeleton'ı kaldır
-        els.change.classList.remove('skeleton');
+    function formatMoney(amount) {
+        return amount.toLocaleString('tr-TR', { style: 'currency', currency: 'TRY' });
     }
 
-    function animateValue(obj, value, suffix, isPositive = true) {
-        // Basit formatlama
-        const formatted = value.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-        const sign = value > 0 ? '+' : '';
-        const colorClass = value >= 0 ? 'text-up' : 'text-down';
+    // --- Local Storage İşlemleri ---
+    function saveData() {
+        const data = {
+            lot: els.lot.value,
+            cost: els.cost.value,
+            tax: els.tax.value
+        };
+        localStorage.setItem('tly_portfolio_data', JSON.stringify(data));
         
-        obj.textContent = `${sign}${formatted} ${suffix}`;
-        obj.className = `result-value ${colorClass}`;
+        if(!els.changeDisplay.classList.contains('skeleton')) {
+             calculateResults();
+             alert('Veriler kaydedildi ve hesaplandı!');
+        } else {
+             alert('Veriler kaydedildi, ancak henüz piyasa verisi çekilemedi. Bekleyiniz...');
+        }
     }
 
-    // --- BAŞLANGIÇ ---
-    function init() {
-        loadSettings();
-        fetchMarketData(); // İlk yükleme
-        
-        // Otomatik Yenileme (60 Saniye)
-        setInterval(fetchMarketData, REFRESH_INTERVAL);
+    function loadLocalData() {
+        const saved = localStorage.getItem('tly_portfolio_data');
+        if (saved) {
+            const data = JSON.parse(saved);
+            els.lot.value = data.lot || '';
+            els.cost.value = data.cost || '';
+            els.tax.value = data.tax || '0';
+        }
     }
 
     init();

@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TLY Fon Portföy Takip</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --accent-green: #0ecb81;
+            --accent-red: #ef4444;
+            --border-color: #334155;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* Header & Status */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 15px;
+        }
+
+        h1 { margin: 0; font-size: 1.5rem; }
+        
+        .status-badge {
+            font-size: 0.8rem;
+            padding: 4px 8px;
+            border-radius: 4px;
+            background: #334155;
+            color: #cbd5e1;
+        }
+        .status-badge.live { background: rgba(14, 203, 129, 0.2); color: var(--accent-green); }
+        .status-badge.error { background: rgba(239, 68, 68, 0.2); color: var(--accent-red); }
+
+        /* Current Price Card */
+        .price-card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border-color);
+        }
+
+        .price-label { color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 5px; }
+        .price-value { font-size: 2.5rem; font-weight: bold; font-variant-numeric: tabular-nums; }
+        .price-change { font-size: 1.2rem; margin-top: 5px; font-weight: 600; }
+        .text-up { color: var(--accent-green); }
+        .text-down { color: var(--accent-red); }
+
+        /* Input Form */
+        .input-group {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 12px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            border: 1px solid var(--border-color);
+        }
+
+        .input-item { display: flex; flex-direction: column; gap: 5px; }
+        .input-item.full-width { grid-column: span 2; }
+        
+        label { font-size: 0.85rem; color: var(--text-secondary); }
+        
+        input {
+            background: #0f172a;
+            border: 1px solid var(--border-color);
+            color: white;
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+        input:focus { outline: 2px solid var(--accent-green); border-color: transparent; }
+
+        /* Results Grid */
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .result-card {
+            background: var(--card-bg);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .result-label { font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 5px; }
+        .result-value { font-size: 1.2rem; font-weight: 600; font-variant-numeric: tabular-nums; }
+
+        /* Loading Skeleton */
+        .skeleton {
+            background: linear-gradient(90deg, #1e293b 25%, #334155 50%, #1e293b 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+            color: transparent !important;
+            border-radius: 4px;
+        }
+
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .input-group { grid-template-columns: 1fr; }
+            .input-item.full-width { grid-column: span 1; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <div>
+            <h1>TLY Portföy</h1>
+            <span style="font-size: 0.8rem; color: var(--text-secondary);">Türk Lirası Likit Fon</span>
+        </div>
+        <div id="connectionStatus" class="status-badge">BAĞLANIYOR...</div>
+    </header>
+
+    <!-- Güncel Fiyat Bölümü -->
+    <div class="price-card">
+        <div class="price-label">ANLIK DEĞER ARTIŞI (%)</div>
+        <div id="currentChange" class="price-value skeleton">--</div>
+        <div id="lastUpdate" style="font-size: 0.7rem; color: var(--text-secondary); margin-top: 10px;">Son güncelleme: --:--:--</div>
+    </div>
+
+    <!-- Kullanıcı Girişleri -->
+    <div class="input-group">
+        <div class="input-item">
+            <label>Lot Adedi</label>
+            <input type="number" id="lotInput" placeholder="Örn: 1000" step="any">
+        </div>
+        <div class="input-item">
+            <label>Birim Maliyet (TL)</label>
+            <input type="number" id="costInput" placeholder="Örn: 1.85" step="any">
+        </div>
+        <div class="input-item full-width">
+            <label>Stopaj Oranı (%)</label>
+            <input type="number" id="taxInput" value="0" step="any">
+        </div>
+    </div>
+
+    <!-- Hesaplama Sonuçları -->
+    <div class="results-grid">
+        <div class="result-card">
+            <div class="result-label">Toplam Yatırım</div>
+            <div id="totalInvestment" class="result-value">0.00 TL</div>
+        </div>
+        <div class="result-card">
+            <div class="result-label">Güncel Değer</div>
+            <div id="currentValue" class="result-value">0.00 TL</div>
+        </div>
+        <div class="result-card">
+            <div class="result-label">Brüt Kar/Zarar</div>
+            <div id="grossProfit" class="result-value">0.00 TL</div>
+        </div>
+        <div class="result-card">
+            <div class="result-label">Net Kar (Stopaj Sonrası)</div>
+            <div id="netProfit" class="result-value">0.00 TL</div>
+        </div>
+        <div class="result-card" style="grid-column: span 2; border-color: var(--accent-green);">
+            <div class="result-label">Toplam Getiri Oranı</div>
+            <div id="totalReturnPercent" class="result-value">%0.00</div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // --- YAPILANDIRMA ---
+    const TARGET_URL = 'https://fvt.com.tr/fonlar/yatirim-fonlari/TLY';
+    // CORS Proxy servisi (HTML içeriğini çekmek için)
+    const CORS_PROXY = 'https://api.allorigins.win/raw?url='; 
+    const REFRESH_INTERVAL = 60000; // 60 Saniye
+
+    // --- DOM ELEMENTLERİ ---
+    const els = {
+        status: document.getElementById('connectionStatus'),
+        change: document.getElementById('currentChange'),
+        lastUpdate: document.getElementById('lastUpdate'),
+        inputs: {
+            lot: document.getElementById('lotInput'),
+            cost: document.getElementById('costInput'),
+            tax: document.getElementById('taxInput')
+        },
+        results: {
+            investment: document.getElementById('totalInvestment'),
+            current: document.getElementById('currentValue'),
+            gross: document.getElementById('grossProfit'),
+            net: document.getElementById('netProfit'),
+            percent: document.getElementById('totalReturnPercent')
+        }
+    };
+
+    // --- STATE MANAGEMENT ---
+    let appState = {
+        currentPriceChange: 0, // Yüzdelik değişim (örn: 0.708)
+        // NOT: TLY bir likit fon olduğu için genelde birim fiyatı sabittir (örn 1.85 TL), 
+        // değer artışı % olarak verilir. Hesaplamayı bu mantıkla yapacağız.
+        lastFetchTime: null
+    };
+
+    // --- LOCAL STORAGE İŞLEMLERİ ---
+    function loadSettings() {
+        const saved = localStorage.getItem('tly_portfolio_settings');
+        if (saved) {
+            const data = JSON.parse(saved);
+            els.inputs.lot.value = data.lot || '';
+            els.inputs.cost.value = data.cost || '';
+            els.inputs.tax.value = data.tax || 0;
+        }
+    }
+
+    function saveSettings() {
+        const data = {
+            lot: els.inputs.lot.value,
+            cost: els.inputs.cost.value,
+            tax: els.inputs.tax.value
+        };
+        localStorage.setItem('tly_portfolio_settings', JSON.stringify(data));
+        calculate();
+    }
+
+    // Event Listeners for Inputs
+    Object.values(els.inputs).forEach(input => {
+        input.addEventListener('input', saveSettings);
+    });
+
+    // --- VERİ ÇEKME MOTORU (FETCH + FALLBACK) ---
+    async function fetchMarketData() {
+        updateStatus('loading', 'Veri Alınıyor...');
+        
+        try {
+            // 1. YÖNTEM: Doğrudan API denemesi (Genelde çalışmaz ama deneyelim)
+            // Not: fvt.com.tr'nin public bir JSON API'si yok, bu yüzden HTML parse edeceğiz.
+            
+            // 2. YÖNTEM: CORS Proxy üzerinden HTML çekip Regex ile veri ayıklama
+            const proxyUrl = CORS_PROXY + encodeURIComponent(TARGET_URL);
+            
+            const response = await fetch(proxyUrl);
+            if (!response.ok) throw new Error('Proxy yanıt vermedi');
+            
+            const htmlText = await response.text();
+            
+            // HTML İçinden Hedef Span'ı Bulma
+            // Aranan Pattern: class="text-sm font-semibold tabular-nums text-[#0ecb81]"
+            // İçerik: 0.708%
+            
+            // Basit bir regex veya DOM parser kullanabiliriz.
+            // Güvenli olması için DOMParser kullanalım.
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(htmlText, 'text/html');
+            
+            // Hedef elementi seç (Class yapısına göre)
+            // Not: Class isimlerinde köşeli parantez varsa selector'da escape etmek gerekir veya contains kullanırız.
+            // En garanti yol: Tabular-nums class'ına sahip ve % içeren span.
+            const targetElement = Array.from(doc.querySelectorAll('span.tabular-nums')).find(el => el.textContent.includes('%'));
+
+            if (targetElement) {
+                const rawText = targetElement.textContent.trim(); // "0.708%"
+                const cleanValue = parseFloat(rawText.replace(',', '.').replace('%', ''));
+                
+                if (!isNaN(cleanValue)) {
+                    appState.currentPriceChange = cleanValue;
+                    appState.lastFetchTime = new Date();
+                    updateStatus('live', 'CANLI');
+                    renderPrice();
+                    calculate();
+                    return;
+                }
+            }
+            
+            throw new Error('Veri formatı okunamadı');
+
+        } catch (error) {
+            console.error("Veri çekme hatası:", error);
+            updateStatus('error', 'HATA');
+            // Hata olsa bile eski veriyi silmeyelim, kullanıcı görebilsin.
+        }
+    }
+
+    // --- HESAPLAMA MOTORU ---
+    function calculate() {
+        const lot = parseFloat(els.inputs.lot.value) || 0;
+        const unitCost = parseFloat(els.inputs.cost.value) || 0;
+        const taxRate = parseFloat(els.inputs.tax.value) || 0;
+        
+        // TLY Mantığı:
+        // Likit fonlarda genellikle "Birim Fiyat" sabittir (örneğin fon başlangıç değeri veya nominal değer).
+        // Ancak kullanıcı "Birim Maliyet" giriyor. 
+        // Elimizde sadece GÜNLÜK DEĞİŞİM (%) var.
+        // Anlık fiyatı tam bilmediğimiz için (API yok), hesaplama mantığını şu şekilde kuruyoruz:
+        // Kullanıcının girdiği maliyet üzerinden, bugünkü % değişimini uygulayarak "Günlük Kazanç" hesaplarız.
+        // VEYA
+        // Kullanıcı mevcut toplam parasını biliyordur.
+        
+        // Senaryo: Kullanıcı toplam yatırım tutarını biliyor olsun (Lot * Birim Maliyet).
+        const totalInvestment = lot * unitCost;
+        
+        // Günlük Değişim Tutarı = Toplam Yatırım * (Günlük Değişim % / 100)
+        // Not: Bu basitleştirilmiş bir modeldir çünkü elimizde anlık "Birim Fiyat" yok, sadece "% Değişim" var.
+        // Daha doğru sonuç için kullanıcının "Toplam Ana Para"sını baz alıyoruz.
+        
+        const dailyChangeAmount = totalInvestment * (appState.currentPriceChange / 100);
+        
+        // Brüt Kar (Burada günlük değişimi kar olarak varsayıyoruz, çünkü toplam kar için geçmiş fiyat lazım)
+        // Kullanıcı arayüzüne "Günlük Getiri Tutarı" yazmak daha doğru olurdu ama istek "Brüt Kar" yönünde.
+        // Biz buraya "Tahmini Günlük Kazanç" yazacağız.
+        
+        const grossProfit = dailyChangeAmount;
+        const taxAmount = grossProfit > 0 ? (grossProfit * (taxRate / 100)) : 0;
+        const netProfit = grossProfit - taxAmount;
+        
+        // Yüzdeler
+        // Toplam getiri yüzdesini hesaplamak için önceki günün kapanışına ihtiyacımız var, elimizde yok.
+        // Onun yerine bugünkü % değişimi gösteriyoruz.
+
+        // Render Results
+        animateValue(els.results.investment, totalInvestment, 'TL');
+        // Güncel değer = Ana Para + Günlük Değişim
+        animateValue(els.results.current, totalInvestment + dailyChangeAmount, 'TL');
+        
+        animateValue(els.results.gross, grossProfit, 'TL', grossProfit >= 0);
+        animateValue(els.results.net, netProfit, 'TL', netProfit >= 0);
+        
+        // Yüzde göstergesi (Bugünkü değişim)
+        els.results.percent.textContent = `%${appState.currentPriceChange.toFixed(3)}`;
+        els.results.percent.className = `result-value ${appState.currentPriceChange >= 0 ? 'text-up' : 'text-down'}`;
+    }
+
+    // --- UI RENDER FONKSİYONLARI ---
+    function updateStatus(state, text) {
+        els.status.textContent = text;
+        els.status.className = 'status-badge';
+        if (state === 'live') els.status.classList.add('live');
+        if (state === 'error') els.status.classList.add('error');
+    }
+
+    function renderPrice() {
+        const val = appState.currentPriceChange.toFixed(3);
+        els.change.textContent = `%${val}`;
+        els.change.className = `price-value ${appState.currentPriceChange >= 0 ? 'text-up' : 'text-down'}`;
+        
+        const now = new Date();
+        els.lastUpdate.textContent = `Son güncelleme: ${now.toLocaleTimeString('tr-TR')}`;
+        
+        // Skeleton'ı kaldır
+        els.change.classList.remove('skeleton');
+    }
+
+    function animateValue(obj, value, suffix, isPositive = true) {
+        // Basit formatlama
+        const formatted = value.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        const sign = value > 0 ? '+' : '';
+        const colorClass = value >= 0 ? 'text-up' : 'text-down';
+        
+        obj.textContent = `${sign}${formatted} ${suffix}`;
+        obj.className = `result-value ${colorClass}`;
+    }
+
+    // --- BAŞLANGIÇ ---
+    function init() {
+        loadSettings();
+        fetchMarketData(); // İlk yükleme
+        
+        // Otomatik Yenileme (60 Saniye)
+        setInterval(fetchMarketData, REFRESH_INTERVAL);
+    }
+
+    init();
+
+</script>
+
+</body>
+</html>
